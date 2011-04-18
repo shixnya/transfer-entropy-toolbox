@@ -37,7 +37,7 @@ function result = CIReduce(cells, args)
   [peak, peak_idx] = max(cells);
 
   win_left = max(1, peak_idx - floor(ci_window / 2));
-  win_right = min(length(cells), peak_idx + ceil(ci_window / 2));
+  win_right = min(length(cells), peak_idx + floor(ci_window / 2));
 
   result = sum(cells(win_left:win_right)) / sum(cells);
 
