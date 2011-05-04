@@ -128,5 +128,5 @@ See example.m
 AUTHORS
 =======
 Michael Hansen <mihansen@indiana.edu> (Indiana University)
-Shinya Ito (Indiana University)
+Shinya Ito <itos@indiana.edu> (Indiana University)
 

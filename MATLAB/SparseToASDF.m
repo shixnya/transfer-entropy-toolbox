@@ -2,7 +2,7 @@
 % Copyright (c) 2011, The Trustees of Indiana University
 % All rights reserved.
 % 
-% Authors: Michael Hansen (mihansen@indiana.edu), Shinya Ito
+% Authors: Michael Hansen (mihansen@indiana.edu), Shinya Ito (itos@indiana.edu)
 % 
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are met:
