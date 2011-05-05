@@ -1,3 +1,15 @@
+% new_asdf = ASDFChangeBinning(asdf, factor)
+%    asdf - {n_neu,n_bin} the old asdf binned with different bin size
+%    factor - (1,1) the number of bins that you want to consider as one bin
+%                   in the new asdf. must be an integer.
+%
+% Returns:
+%    new_asdf - {n_neu,n_bin_new} the new asdf binned with different bin size
+%
+% Description :
+%    Change binning size. New asdf will have the size n_bin_new = floor(n_bin / factor)
+%    Since it "bins" the spiking, the resulting timing becomes an integer (and unique).
+
 %==============================================================================
 % Copyright (c) 2011, The Trustees of Indiana University
 % All rights reserved.
@@ -32,18 +44,6 @@
 %==============================================================================
 
 function new_asdf = ASDFChangeBinning(asdf, factor)
-% new_asdf = ASDFChangeBinning(asdf, factor)
-%    asdf - {n_neu,n_bin} the old asdf binned with different bin size
-%    factor - (1x1) the number of bins that you want to consider as one bin
-%                   in the new asdf. must be an integer.
-%
-% Returns:
-%    new_asdf - {n_neu,n_bin_new} the new asdf binned with different bin size
-%
-% Description :
-%    Change binning size. New asdf will have the size n_bin_new = floor(n_bin / factor)
-%    Since it "bins" the spiking, the resulting timing becomes an integer (and unique).
-
 n_neu = asdf{end}(1);
 original_duration = asdf{end}(2);
 new_duration = ceil(original_duration / factor);

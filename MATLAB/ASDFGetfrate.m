@@ -1,3 +1,10 @@
+% frate = ASDFGetfrate(asdf)
+%
+%    asdf - {nNeu+2, 1} ASDF format spike data file
+%
+% Returns:
+%    frate - (nNeu, 1) Probability of firing at one bin for each neuron.
+
 %==============================================================================
 % Copyright (c) 2011, The Trustees of Indiana University
 % All rights reserved.
@@ -32,13 +39,6 @@
 %==============================================================================
 
 function frate = ASDFGetfrate(asdf)
-% frate = ASDFGetfrate(asdf)
-%
-%    asdf - ASDF
-%
-% Returns:
-%    frate - firing rate of each neuron
-
 nNeu = asdf{end}(1);
 duration = asdf{end}(2);
 

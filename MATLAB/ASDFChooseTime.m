@@ -1,3 +1,14 @@
+% cutasdf = ASDFchoosetime(asdf, startTime, endTime)
+%
+%    asdf - {nNeu+2,1} ASDF to subsample from
+%    startTime - (scalar) Starting time of new asdf
+%                  if only two arguments are given, this is the time that you wanna choose.
+%    endTime - (scalar) Ending time of new asdf
+%    
+%
+% Returns:
+%    cutasdf - {nNeu+2,1} ASDF with new time and duration
+
 %==============================================================================
 % Copyright (c) 2011, The Trustees of Indiana University
 % All rights reserved.
@@ -32,17 +43,6 @@
 %==============================================================================
 
 function cutasdf = ASDFChoosetime(asdf, startTime, endTime)
-% cutasdf = ASDFchoosetime(asdf, startTime, endTime)
-%
-%    asdf - {nNeu+2,1} ASDF to subsample from
-%    startTime - (scalar) Starting time of new asdf
-%                  if only two arguments are given, this is the time that you wanna choose.
-%    endTime - (scalar) Ending time of new asdf
-%    
-%
-% Returns:
-%    cutasdf - {nNeu+2,1} ASDF with new time and duration
-
 nNeu = asdf{end}(1);
 duration = asdf{end}(2);
 if nargin > 2

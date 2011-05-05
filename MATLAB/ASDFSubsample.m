@@ -1,3 +1,11 @@
+% subasdf = ASDFsubsample(asdf, subIndex)
+%
+%    asdf - {nNeu+2,1} ASDF to subsample from
+%    subIndex - (subNeu,1) indices of subsampled neurons
+%
+% Returns:
+%    subasdf - {subNeu+2,1} subsampled ASDF
+
 %==============================================================================
 % Copyright (c) 2011, The Trustees of Indiana University
 % All rights reserved.
@@ -32,14 +40,6 @@
 %==============================================================================
 
 function subasdf = ASDFsubsample(asdf, subIndex)
-% subasdf = ASDFsubsample(asdf, subIndex)
-%
-%    asdf - {nNeu+2,1} ASDF to subsample from
-%    subIndex - (subNeu,1) indices of subsampled neurons
-%
-% Returns:
-%    subasdf - {subNeu+2,1} subsampled ASDF
-
 subasdf = asdf(subIndex);
 
 subNeu = length(subIndex);

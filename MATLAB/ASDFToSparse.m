@@ -1,3 +1,14 @@
+% [raster, binunit] = ASDFToSparse(asdf)
+%
+%    asdf - {n_neu + 2, 1} ASDF data.
+%
+% Returns :
+%    raster - (n_neu, duration) (Sparse) time raster expressed as a sparse matrix.
+%    binunit - (string) the unit of time in the data. (length of a bin in real scale)
+%
+% Description :
+%    This function converts the time raster of ASDF to sparse matrix.
+
 %==============================================================================
 % Copyright (c) 2011, The Trustees of Indiana University
 % All rights reserved.
@@ -32,17 +43,6 @@
 %==============================================================================
 
 function [raster, binunit] = ASDFToSparse(asdf)
-% [raster, binunit] = ASDFToSparse(asdf)
-%
-%    asdf - {n_neu + 2, 1} ASDF data.
-%
-% Returns :
-%    raster - (n_neu, duration) (Sparse) time raster expressed as a sparse matrix.
-%    binunit - (string) the unit of time in the data. (length of a bin in real scale)
-%
-% Description :
-%    This function converts the time raster of ASDF to sparse matrix.
-
 info = asdf{end};
 n_neu = info(1);
 duration = info(2);
