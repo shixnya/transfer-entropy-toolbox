@@ -1,20 +1,19 @@
-% te_result = ASDFTE(asdf, j_delay, i_order, j_order, reduce, reduce_args)
+% [te_result, ci_result, all_te] = ASDFTE(asdf, j_delay, i_order, j_order, windowsize)
 % Parameters:
 %   asdf        - Time series in Another Spike Data Format (ASDF)
 %   j_delay     - Number of bins to lag sender (j series) or a vector [default 1]
 %   i_order     - Order of receiver [default 1]
 %   j_order     - Order of sender [default 1]
-%   reduce      - Function to reduce transfer entropies across multiple delays [default max]
-%   reduce_args - Vector of arguments passed to the reduce function [default empty]
+%   windowsize  - window size used for Coincidence Index calculation (odd number only)
 %
 % Returns:
-%   te_result - (nNeu, nNeu) NxN matrix where N(i, j) is the transfer entropy from j->i
+%   te_result - NxN matrix where N(i, j) is the transfer entropy from j->i
 
 %==============================================================================
 % Copyright (c) 2011, The Trustees of Indiana University
 % All rights reserved.
 % 
-% Authors: Michael Hansen (mihansen@indiana.edu), Shinya Ito (itos@indiana.edu)
+% Authors: Michael Hansen (mihansen@indiana.edu), Shinya Ito
 % 
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are met:
@@ -43,7 +42,7 @@
 % POSSIBILITY OF SUCH DAMAGE.
 %==============================================================================
 
-function te_result = ASDFTE(asdf, j_delay, i_order, j_order, reduce, reduce_args)
+function [te_result, ci_result, all_te] = ASDFTE(asdf, j_delay, i_order, j_order, windowsize)
 % Set defaults
 if nargin < 2
 	j_delay = 1;
@@ -58,40 +57,35 @@ if nargin < 4
 end
 
 if nargin < 5
-	reduce = @max;
+	windowsize = 5;
 end
 
 if length(j_delay) == 1
 	te_result = transent(asdf, j_delay, i_order, j_order); % Single delay
+	return;
 else
-
 	% Multiple delays
 	num_delays = length(j_delay);
 	info = asdf{end};
 	num_neurons = info(1);
 
 	% Allocate space for all matrices
-	all_te = zeros(num_neurons * num_delays, num_neurons);
+	all_te = zeros(num_neurons, num_neurons, num_delays);
 
 	% Compute TE for delay times
-	row = 1;
-	for d = j_delay
-		all_te(row:(row + num_neurons - 1), :) = transent(asdf, d, i_order, j_order);
-		row = row + num_neurons;
+	parfor d = 1:num_delays
+		all_te(:, :, d) = transent(asdf, j_delay(d), i_order, j_order);
 	end
 
 	% Reduce to final matrix
-	te_result = zeros(num_neurons, num_neurons);
+	te_result = max(all_te, [], 3); % reduction in 3rd dimension
 
-	for i = 1:num_neurons
-		rows = i + ((0:(num_delays - 1)) * num_neurons);
-		for j = 1:num_neurons
-			if nargin < 6
-				te_result(i, j) = reduce(all_te(rows, j));
-			else
-				te_result(i, j) = reduce(all_te(rows, j), reduce_args);
+	ci_result = zeros(num_neurons);
+	if nargout > 1
+		for i = 1:num_neurons
+			for j = 1:num_neurons
+				ci_result(i, j) = CIReduce(all_te(i, j, :), windowsize);
 			end
 		end
 	end
-
 end % if multiple delays
