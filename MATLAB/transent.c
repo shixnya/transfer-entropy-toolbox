@@ -162,6 +162,10 @@ void transent_1
       j_size = mxGetNumberOfElements(array_ptr);
       j_series = mxGetPr(array_ptr);
 
+      if ((i_size == 0) || (j_size == 0)) {
+        te_result[(i * series_count) + j] = te_final;
+      }
+
       /* Order is x^(k+1), y^(l) */
       idx = 0;
 
