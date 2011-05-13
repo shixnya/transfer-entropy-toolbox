@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <math.h>
 #include <stdio.h>
 #include <memory.h>
-#include <inttypes.h>
 
 typedef int TimeType;
 
@@ -46,7 +45,7 @@ void transent_1
 
 void transent_ho
 (const mxArray *all_series, const mwSize series_count,
- const size_t x_order, const size_t y_order,
+ const unsigned int x_order, const unsigned int y_order,
  const TimeType y_delay,
  const TimeType duration,
  double *te_result);
@@ -55,7 +54,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
                  int nrhs, const mxArray *prhs[]) {
 
   mwSize series_count;
-  size_t x_order, y_order;
+  unsigned int x_order, y_order;
   TimeType y_delay, duration;
   double *data_ptr;
   mxArray *array_ptr;
@@ -85,10 +84,10 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
   if (nrhs == 4) {
     data_ptr = mxGetPr(prhs[2]);
-    x_order = (size_t)data_ptr[0];
+    x_order = (unsigned int)data_ptr[0];
 
     data_ptr = mxGetPr(prhs[3]);
-    y_order = (size_t)data_ptr[0];
+    y_order = (unsigned int)data_ptr[0];
   }
   else {
     x_order = 1;
@@ -113,6 +112,10 @@ void mexFunction(int nlhs, mxArray *plhs[],
   }
 }
 
+double Log2(double n) {
+	return log(n) / log(2.0);
+}
+
 /* Computes the first-order transfer entropy matrix for all pairs. */
 void transent_1
 (const mxArray *all_series, const mwSize series_count,
@@ -121,25 +124,25 @@ void transent_1
  double *te_result) {
 
   /* Constants */
-  const size_t x_order = 1, y_order = 1,                
+  const unsigned int x_order = 1, y_order = 1,                
                num_series = 3,
                num_counts = 8,
                num_x = 4,
                num_y = 2;
 
   /* Locals */
-  TimeType counts[num_counts];
-  uint64_t code;
-  size_t k, l, idx, c1, c2;
+  TimeType counts[8];
+  unsigned long code;
+  long k, l, idx, c1, c2;
   double te_final, prob_1, prob_2, prob_3;
 
-  double *ord_iter[num_series];
-  double *ord_end[num_series];
+  double *ord_iter[3];
+  double *ord_end[3];
 
-  TimeType ord_times[num_series];
-  TimeType ord_shift[num_series];
+  TimeType ord_times[3];
+  TimeType ord_shift[3];
 
-  const size_t window = y_order + y_delay;
+  const unsigned int window = y_order + y_delay;
   const TimeType end_time = duration - window + 1;
   TimeType cur_time, next_time;
 
@@ -163,7 +166,8 @@ void transent_1
       j_series = mxGetPr(array_ptr);
 
       if ((i_size == 0) || (j_size == 0)) {
-        te_result[(i * series_count) + j] = te_final;
+        te_result[(i * series_count) + j] = 0;
+		continue;
       }
 
       /* Order is x^(k+1), y^(l) */
@@ -267,7 +271,7 @@ void transent_1
 
         prob_3 = (double)c1 / (double)c2;
 
-        te_final += (prob_1 * log2(prob_2 / prob_3));
+        te_final += (prob_1 * Log2(prob_2 / prob_3));
       }
 
       /* MATLAB is column major, but flipped for compatibility */
@@ -282,30 +286,30 @@ void transent_1
 /* Computes the higher-order transfer entropy matrix for all pairs. */
 void transent_ho
 (const mxArray *all_series, const mwSize series_count,
- const size_t x_order, const size_t y_order,
+ const unsigned int x_order, const unsigned int y_order,
  const TimeType y_delay,
  const TimeType duration,
  double *te_result) {
 
   /* Constants */
-  const size_t num_series = 1 + y_order + x_order,
-               num_counts = (size_t)pow(2, num_series),
-               num_x = (size_t)pow(2, x_order + 1),
-               num_y = (size_t)pow(2, y_order);
+  const unsigned int num_series = 1 + y_order + x_order,
+               num_counts = (unsigned int)pow(2, num_series),
+               num_x = (unsigned int)pow(2, x_order + 1),
+               num_y = (unsigned int)pow(2, y_order);
 
   /* Locals */
   TimeType *counts = (TimeType*)malloc(sizeof(TimeType) * num_counts);
-  uint64_t code;
-  size_t k, l, idx, c1, c2;
+  unsigned long code;
+  long k, l, idx, c1, c2;
   double te_final, prob_1, prob_2, prob_3;
 
-  double *ord_iter[num_series];
-  double *ord_end[num_series];
+  double **ord_iter = (double**)malloc(sizeof(double*) * num_series);
+  double **ord_end = (double**)malloc(sizeof(double*) * num_series);
 
-  TimeType ord_times[num_series];
-  TimeType ord_shift[num_series];
+  TimeType *ord_times = malloc(sizeof(TimeType) * num_series);
+  TimeType *ord_shift = malloc(sizeof(TimeType) * num_series);
 
-  const size_t window = (y_order + y_delay) > (x_order + 1) ? (y_order + y_delay) : (x_order + 1);
+  const unsigned int window = (y_order + y_delay) > (x_order + 1) ? (y_order + y_delay) : (x_order + 1);
   const TimeType end_time = duration - window + 1;
   TimeType cur_time, next_time;
 
@@ -329,7 +333,8 @@ void transent_ho
       j_series = mxGetPr(array_ptr);
 
       if ((i_size == 0) || (j_size == 0)) {
-        te_result[(i * series_count) + j] = te_final;
+        te_result[(i * series_count) + j] = 0;
+		continue;
       }
 
       /* Order is x^(k+1), y^(l) */
@@ -433,7 +438,7 @@ void transent_ho
 
         prob_3 = (double)c1 / (double)c2;
 
-        te_final += (prob_1 * log2(prob_2 / prob_3));
+        te_final += (prob_1 * Log2(prob_2 / prob_3));
       }
 
       /* MATLAB is column major, but flipped for compatibility */
@@ -445,6 +450,10 @@ void transent_ho
 
   /* Clean up */
   free(counts);
+  free(ord_iter);
+  free(ord_end);
+  free(ord_times);
+  free(ord_shift);
  
 } /* transent_ho */
 

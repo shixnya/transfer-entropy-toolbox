@@ -73,7 +73,7 @@ else
 	all_te = zeros(num_neurons, num_neurons, num_delays);
 
 	% Compute TE for delay times
-	parfor d = 1:num_delays
+	for d = 1:num_delays
 		all_te(:, :, d) = transent(asdf, j_delay(d), i_order, j_order);
 	end
 
