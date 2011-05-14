@@ -7,28 +7,28 @@
 %   windowsize  - window size used for Coincidence Index calculation (odd number only)
 %
 % Returns:
-%   te_result - NxN matrix where N(i, j) is the transfer entropy from j->i
+%   te_result - (nNeu, nNeu) NxN matrix where N(i, j) is the transfer entropy from j->i
 
 %==============================================================================
 % Copyright (c) 2011, The Trustees of Indiana University
 % All rights reserved.
-% 
-% Authors: Michael Hansen (mihansen@indiana.edu), Shinya Ito
-% 
+%
+% Authors: Michael Hansen (mihansen@indiana.edu), Shinya Ito (itos@indiana.edu)
+%
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are met:
-% 
+%
 %   1. Redistributions of source code must retain the above copyright notice,
 %      this list of conditions and the following disclaimer.
-% 
+%
 %   2. Redistributions in binary form must reproduce the above copyright notice,
 %      this list of conditions and the following disclaimer in the documentation
 %      and/or other materials provided with the distribution.
-% 
+%
 %   3. Neither the name of Indiana University nor the names of its contributors
 %      may be used to endorse or promote products derived from this software
 %      without specific prior written permission.
-% 
+%
 % THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 % AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 % IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -73,7 +73,7 @@ else
 	all_te = zeros(num_neurons, num_neurons, num_delays);
 
 	% Compute TE for delay times
-	for d = 1:num_delays
+	parfor d = 1:num_delays
 		all_te(:, :, d) = transent(asdf, j_delay(d), i_order, j_order);
 	end
 
