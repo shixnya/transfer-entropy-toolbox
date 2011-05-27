@@ -26,7 +26,7 @@ For demonstration of the code, please open and run simple_demo.m.
 =====================================
 Another Spike Data Format is basically cell array of spike timing of each neuron.
 In order to calculate TE correctly, I recommend to use only integer for the timing. To ensure that, you can do
->> ChangeBinning(asdf, 1);
+>> asdf = ChangeBinning(asdf, 1);
 
 Last two cells contains special information of the data.
 
@@ -81,8 +81,8 @@ train j:   ..o.......
 
 You can also combine these two.
 
-delay=3 (2nd order for j, 1st order for i)
-train i:   ....o*....
+delay=3 (2nd order for j, 3rd order for i)
+train i:   ..ooo*....
 train j:   .oo.......
 
 
@@ -91,10 +91,10 @@ train j:   .oo.......
 These programs are tested on these environments
 Environment 1
 Spec: Core 2 Duo E8200 (2.66GHz) + 4GB RAM
-OS: Ubuntu Linux 10.04 LTS 32-bit
+OS: Ubuntu Linux 11.04 64-bit
 Compiler: GCC 4.4.3
-Matlab: R2008b and R2010b
-Octave: 3.0.5
+Matlab: R2010b
+Octave: 3.2.4
 
 Environment 2
 Spec: Core 2 Duo E8200 (2.66GHz) + 4GB RAM
