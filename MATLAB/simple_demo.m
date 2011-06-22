@@ -28,7 +28,7 @@ disp('You get TE out of these');
 [peakTE, CI, TEdelays] = ASDFTE(asdf, 1:3) % using all the pairs in asdf, with delay of 1 to 3 bins
 % peakTE is a peak value over delay. CI is coincidence index.
 % TEdelays is 3-d matrix; each dimension means (sendind train, receiving train, delay), respectively.
-% You should see TEdelays(1,2,1) and TEdlays(2,1,2) strong as I embeded the connections.
+% You should see TEdelays(1,2,1) and TEdelays(2,1,2) strong as I made them correlated.
 
 %% 4. Some Higher Order TE calculations
 disp('You can also calculate Higher Order TE with arbitrary delays');
