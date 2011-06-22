@@ -7,7 +7,7 @@
 %   windowsize  - window size used for Coincidence Index calculation (odd number only)
 %
 % Returns:
-%   te_result - (nNeu, nNeu) NxN matrix where N(i, j) is the transfer entropy from j->i
+%   te_result - (nNeu, nNeu) NxN matrix where N(i, j) is the transfer entropy from i->j
 
 %==============================================================================
 % Copyright (c) 2011, The Trustees of Indiana University
