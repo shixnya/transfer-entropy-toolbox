@@ -18,14 +18,16 @@ Index
 Compile the mex file (C program) with gcc or lcc (Matlab default C compiler).
 >> mex transent.c % if you use mex for the first time, you might be prompted to choose a compiler.
 Put all the programs into your Matlab path (or current directory).
-You are ready to use!
-For demonstration of the code, please open and run simple_demo.m.
+That's it!
+For demonstration of the code, please download Izhik_100_0.mat from our
+project web page, open and run 'simple_demo.m'.
 
 
 2. Another Spiking Data Format (ASDF)
 =====================================
 Another Spike Data Format is basically cell array of spike timing of each neuron.
-In order to calculate TE correctly, I recommend to use only integer for the timing. To ensure that, you can do
+In order to calculate TE correctly, I recommend to use only integer for the timing.
+To ensure that, you can do
 >> asdf = ChangeBinning(asdf, 1);
 
 Last two cells contains special information of the data.
@@ -38,20 +40,22 @@ asdf{end}: Array of number of neurons, number of total bins of the data
 3. Functions (Please refer to help of each function for details)
 ================================================================
 * TE Calculation
-ASDFTE.m (requires transentmex)  delayed higher order TE calculator for ASDF.
+ASDFTE.m: (requires transentmex) delayed higher order TE calculator for ASDF.
+ASDFTE_parallel.m: (requires transentmex, and Parallel Computing Toolbox)
+Parallel version of ASDFTE.m. Call 'matlabpool(N)' before running.
 
 * Changing Data Format
-SparseToASDF.m  Convert matrix form of raster to ASDF.
-ASDFToSparse.m  Convert ASDF to sparse matrix
+SparseToASDF.m: Convert matrix form of raster to ASDF.
+ASDFToSparse.m: Convert ASDF to sparse matrix of size (nNeu, duration)
 
 * ASDF utilities
-ASDFsubsample.m  Subsample specified neurons from ASDF.
-ASDFchoosetime.m  Crop a time segment from larger ASDF.
-ASDFGetfrate.m   Get firing rate (per bin) of all the neurons.
-ASDFChangeBinning.m  Change binning size of ASDF.
+ASDFSubsample.m: Subsample specified neurons from ASDF.
+ASDFChooseTime.m: Crop a time segment from larger ASDF.
+ASDFGetfrate.m: Get firing rate (per bin) of all the neurons.
+ASDFChangeBinning.m: Change binning size of ASDF.
 
 * Supporting functions (not to be excuted directly)
-transent.c  Mex file for rapid calculation of TE.
+transent.c: Mex file for rapid calculation of TE.
 
 
 4. About the order and delay of TE
