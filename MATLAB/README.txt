@@ -1,132 +1,107 @@
-GENERAL INFORMATION
-===================
-MATLAB/C library for calculating first-order and higher-order delayed transfer
-entropy [1] from sparse, binary time series data.
-
-[1] Thomas Schreiber. Measuring information transfer. Phys. Rev. Lett.,
-    85(2):461–464, Jul 2000.
-
-REQUIREMENTS
-============
-MATLAB or Octave and the ability to compile MEX files. It's recommended that you
-turn on all available compiler optimizations, as they can speed up calculations
-significantly.
-
-LIBRARY USAGE
-=============
-For calculations, all time series data is assumed to be in Another Spike Data
-Format (ASDF). This is simply a MATLAB cell array with some extra metadata (see
-The ASDF Format section for details).
-
-To produce an ASDF object from a matrix of binary spikes (neurons are rows,
-columns are time bins), use the SparseToASDF function:
-
-spikes = [
-           1 1 1 0 1 1 0 1 0 0 1 1 0 0 1 1 1 0 1 1 0 1; % neuron 1
-           1 0 1 0 1 0 1 0 1 1 0 1 1 0 1 1 0 1 1 0 0 1  % neuron 2
-         ];
-
-asdf = SparseToASDF(spikes, 1); % Use a bin size of 1
-
-You can now use the ASDF to calculate transfer entropy by calling ASDFTE. This
-function has the following parameters:
-
-  * asdf - ASDF object with N time series
-  * j_delay - Number of bins to lag sender (j series) or vector [default 1]
-  * i_order - Order of receiver [default 1]
-  * j_order - Order of sender [default 1]
-
-ASDFTE returns an NxN matrix T where T(i, j) is the transfer entropy from j->i.
-
-By combining parameters, you can calculate the following kinds of transfer
-entropy:
-
-  * Delay 1 first-order - ASDFTE(asdf)
-  * Delay d first-order - ASDFTE(asdf, d)
-  * Delay d higher-order - ASDFTE(asdf, d, i_order, j_order)
-  * Multi-delay (d1-d2) first-order - ASDFTE(asdf, d1:d2)
-    * Takes max value, see "Choosing a TE value" below
-  * Multi-delay (d1-d2) higher-order - ASDFTE(asdf, d1:d2, i_order, j_order)
-    * Takes max value, see "Choosing a TE value" below
-
-Choosing a TE value
--------------------
-When computing transfer entropy for real-world data, one does not usually know
-in advance the "correct" delays for every pair of connected neurons. It's
-necessary, then, to calculate transfer entropy for multiple delay times and use
-all of resulting TE matrices to compute the final TE matrix.
-
-By default, ASDFTE will use the max function to choose a final TE value when
-multiple delay times are given. The final TE matrix will therefore contain the
-maximum TE values for all neuron pairs and all delay times.
-
-ASDFTE(asdf, d1:d2, i_order, j_order) is equivalent to calling
-ASDFTE(asdf, d1:d2, i_order, j_order, @max)
-
-Another function, CIReduce, is provided to compute the coincidence index
-instead. This is the sum of TE values in a window centered on the peak TE value
-divided by the sum of all TE values for a given neuron pair. When using
-CIReduce, you must provide a window size as the final argument to ASDFTE:
-
-ASDFTE(asdf, d1:d2, i_order, j_order, @CIReduce, window)
-
-Be careful, as the resulting matrix will now contain coincidence indices for
-every neuron pair instead of TE values.
-
-Computation Time
-----------------
-ASDFTE's calculation time grows differently for its different parameters. In
-general, the calculation time grows:
-
-  * Quadradically in the number of neurons (N)
-  * Sub-linearly in the lengths of all time series
-    * This is heavily dependent on the overlap between series
-  * Linearly in the number of delay bins (d1:d2)
-  * Exponentially in the total order (i_order + j_order)
-
-Beware especially of the last bullet. Increasing the total order by 1 roughly
-doubles the calculation time, so it is easy to run into calculation times
-exceeding one's lifespan when going above a total order of 20 or so!
-
-The ASDF Format
----------------
-An ASDF object is a MATLAB cell array with two extra cells at the end. You can
-create one manually by following the steps in this section. First, you must
-create an empty cell array:
-
-asdf = cell();
-
-Each time series inside an ASDF object is an ordered vector of spike times (time
-bins where the binary value was 1). If our first of N time series (neuron 1) had
-spikes at time bins 1, 3, 6, and 10, we would write:
-
-asdf{1} = [1, 3, 6, 10];
-
-Additional time series are added in the same manner, one after the other:
-
-asdf{2} = [3, 7, 8, 12, 20];
-asdf{3} = [5, 11, 24];
-...
-asdf{N} = [2, 3, 4, 9, 25, 28];
-
-After all of the time series have been added, we must add a cell with the bin
-unit. In most cases, this will be 1:
-
-asdf{N + 1} = 1;
-
-Finally, we add the number of neurons and the total duration (number of recorded
-time bins):
-
-asdf{N + 2} = [N, 35];
-
-We now have a fully functioning ASDF object!
-
-EXAMPLE
-=======
-See example.m
-
-AUTHORS
-=======
+Package for Transfer Entropy Calculation (Ver. 1.1)
+Authors:
 Michael Hansen <mihansen@indiana.edu> (Indiana University)
 Shinya Ito <itos@indiana.edu> (Indiana University)
+Date: May 13, 2011
 
+How to use TEpackage
+Index
+1. Preparation
+2. Another Spiking Data Format (ASDF)
+3. Functions
+4. About the order and delay of TE
+5. Tested environment
+
+
+1. Preparation
+==============
+Compile the mex file (C program) with gcc or lcc (Matlab default C compiler).
+>> mex transent.c % if you use mex for the first time, you might be prompted to choose a compiler.
+Put all the programs into your Matlab path (or current directory).
+That's it!
+For demonstration of the code, please download Izhik_100_0.mat from our
+project web page, open and run 'simple_demo.m'.
+
+
+2. Another Spiking Data Format (ASDF)
+=====================================
+Another Spike Data Format is basically cell array of spike timing of each neuron.
+In order to calculate TE correctly, I recommend to use only integer for the timing.
+To ensure that, you can do
+>> asdf = ChangeBinning(asdf, 1);
+
+Last two cells contains special information of the data.
+
+asdf{end-1}: Binning size in unit of ms (milisecond). (e.g. 1.2 -> 1.2ms/bin, 10 -> 10ms/bin etc...)
+asdf{end}: Array of number of neurons, number of total bins of the data
+  (e.g. [10 300000] -> 10 neurons, 300000 time bins)
+
+
+3. Functions (Please refer to help of each function for details)
+================================================================
+* TE Calculation
+ASDFTE.m: (requires transentmex) delayed higher order TE calculator for ASDF.
+ASDFTE_parallel.m: (requires transentmex, and Parallel Computing Toolbox)
+Parallel version of ASDFTE.m. Call 'matlabpool(N)' before running.
+
+* Changing Data Format
+SparseToASDF.m: Convert matrix form of raster to ASDF.
+ASDFToSparse.m: Convert ASDF to sparse matrix of size (nNeu, duration)
+
+* ASDF utilities
+ASDFSubsample.m: Subsample specified neurons from ASDF.
+ASDFChooseTime.m: Crop a time segment from larger ASDF.
+ASDFGetfrate.m: Get firing rate (per bin) of all the neurons.
+ASDFChangeBinning.m: Change binning size of ASDF.
+
+* Supporting functions (not to be excuted directly)
+transent.c: Mex file for rapid calculation of TE.
+
+
+4. About the order and delay of TE
+==================================
+Order is 'length of time you include in the past'.
+If you use 3rd order, you include 3 bins before the time you want to predict.
+
+* - the time bin you want to predict
+o - the time bin you use for prediction
+1st order
+train i:   ....o*....
+train j:   ....o.....
+
+3rd order for both i and j
+train i:   ..ooo*....
+train j:   ..ooo.....
+
+Delay is 'distance of time from what you want to predict to what you use for predict'.
+
+delay=1 (1st order)
+train i:   ....o*....
+train j:   ....o.....
+
+delay=3 (1st order)
+train i:   ....o*....
+train j:   ..o.......
+
+You can also combine these two.
+
+delay=3 (2nd order for j, 3rd order for i)
+train i:   ..ooo*....
+train j:   .oo.......
+
+
+5. Tested environment
+=====================
+These programs are tested on these environments
+Environment 1
+Spec: Core 2 Duo E8200 (2.66GHz) + 4GB RAM
+OS: Ubuntu Linux 11.04 64-bit
+Compiler: GCC 4.4.3
+Matlab: R2010b
+Octave: 3.2.4
+
+Environment 2
+Spec: Core 2 Duo E8200 (2.66GHz) + 4GB RAM
+OS: Windows XP 32-bit
+Compiler: LCC
+Matlab: R2006a
