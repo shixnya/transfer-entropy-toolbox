@@ -130,8 +130,9 @@ void transent_ho
 
       // y^(l)
       for (std::size_t k = 0; k < y_order; ++k) {
+        shift = (window - 1) - y_delay - k;
         ord_end[idx] = all_series[j].end();
-        ord_iter[idx] = std::make_pair(all_series[j].begin(), -k);
+        ord_iter[idx] = std::make_pair(std::lower_bound(all_series[j].begin(), ord_end[idx], shift + 1), shift);
         ord_times[idx] = *(ord_iter[idx].first) - ord_iter[idx].second;
         ++idx;
       }
