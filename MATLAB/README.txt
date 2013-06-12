@@ -1,8 +1,8 @@
-Package for Transfer Entropy Calculation (Ver. 1.1)
+Package for Transfer Entropy Calculation (Ver. 0.5)
 Authors:
 Michael Hansen <mihansen@indiana.edu> (Indiana University)
 Shinya Ito <itos@indiana.edu> (Indiana University)
-Date: May 13, 2011
+Date: June 11, 2013
 
 How to use TEpackage
 Index
@@ -105,3 +105,9 @@ Spec: Core 2 Duo E8200 (2.66GHz) + 4GB RAM
 OS: Windows XP 32-bit
 Compiler: LCC
 Matlab: R2006a
+
+Environment 3
+Spec: Mac Pro 5,1
+OS: Mac OS X Mountain Lion
+Compiler: GCC 4.2.1 (LLVM)
+Matlab: R2011a
