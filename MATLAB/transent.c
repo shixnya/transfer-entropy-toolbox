@@ -358,7 +358,12 @@ void transent_ho
       for (k = 0; k < y_order; ++k) {
         ord_iter[idx] = j_series;
         ord_end[idx] = j_series + j_size;
-        ord_shift[idx] = -k;
+        ord_shift[idx] = (window - 1) - y_delay - k;
+
+        while ((TimeType)*(ord_iter[idx]) < ord_shift[idx] + 1) {
+          ++(ord_iter[idx]);
+        }
+
         ord_times[idx] = (TimeType)*(ord_iter[idx]) - ord_shift[idx];
         ++idx;
       }
